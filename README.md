@@ -43,6 +43,16 @@ node scripts/exorcist-scanner.js
 
 「法醫，這是 skeleton-report.json。根據這份骨架，幫我找出這個專案最脆弱的耦合點，並畫出 Mermaid 圖！」
 
+「診斷流程圖」
+
+graph TD
+    A[收到屍體/Bug] --> B{執行 /map}
+    B --> C[產出全域圖譜]
+    C --> D[執行 /autopsy 逆向驗屍]
+    D --> E[產出診斷報告與 BGM]
+    E --> F[執行 /refactor_check 影響評估]
+    F --> G[執行 /refactor 零傷重構]
+
 
 ⚠️ 術後警語 (Disclaimer)
 本工具產出之診斷報告可能包含：
