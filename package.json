@@ -1,0 +1,17 @@
+{
+  "name": "legacy-code-exorcist",
+  "version": "1.0.0",
+  "description": "為老舊系統設計的數位法醫 AI 系統",
+  "scripts": {
+    "forensic:scan": "node ./scripts/exorcist-scanner.js",
+    "test:persona": "node ./scripts/test-persona.js"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.21.3",
+    "@babel/traverse": "^7.21.3",
+    "chalk": "^4.1.2",
+    "dotenv": "^16.4.5",
+    "openai": "^4.38.2",
+    "play-sound": "^1.1.6"
+  }
+}
