@@ -35,7 +35,8 @@ async function main() {
         process.exit(1);
     }
 
-    const coreAgntPath = path.join(rootDir, 'prompts', 'core-agent.md');
+    const isEnglish = skinName.includes('.en');
+    const coreAgntPath = path.join(rootDir, 'prompts', isEnglish ? 'core-agent.en.md' : 'core-agent.md');
     
     // 初始化 Case Payload
     let userMessageContent = [];
@@ -60,13 +61,19 @@ async function main() {
         const imgPngPath = path.join(casePath, 'screenshot.png');
         const imgJpgPath = path.join(casePath, 'screenshot.jpg');
 
-        let textPrompt = `請幫我執行逆向驗屍診斷 (/autopsy)。這是一件「通靈式除錯」案件。\n\n`;
+        let textPrompt = isEnglish 
+            ? `Please perform a reverse autopsy diagnosis (/autopsy). This is a 'Vague Bug Triage' case.\n\n`
+            : `請幫我執行逆向驗屍診斷 (/autopsy)。這是一件「通靈式除錯」案件。\n\n`;
 
         if (fs.existsSync(ticketPath)) {
-            textPrompt += `【客訴/模糊回報】\n${fs.readFileSync(ticketPath, 'utf8')}\n\n`;
+            textPrompt += isEnglish 
+                ? `[Customer Complaint]\n${fs.readFileSync(ticketPath, 'utf8')}\n\n`
+                : `【客訴/模糊回報】\n${fs.readFileSync(ticketPath, 'utf8')}\n\n`;
         }
         if (fs.existsSync(sourceJsPath)) {
-            textPrompt += `【涉案的原始碼】\n\`\`\`javascript\n${fs.readFileSync(sourceJsPath, 'utf8')}\n\`\`\`\n`;
+            textPrompt += isEnglish 
+                ? `[Involved Source Code]\n\`\`\`javascript\n${fs.readFileSync(sourceJsPath, 'utf8')}\n\`\`\`\n`
+                : `【涉案的原始碼】\n\`\`\`javascript\n${fs.readFileSync(sourceJsPath, 'utf8')}\n\`\`\`\n`;
         }
         
         userMessageContent.push({ type: "text", text: textPrompt });
@@ -89,7 +96,9 @@ async function main() {
         const caseContent = fs.readFileSync(casePath, 'utf8');
         userMessageContent.push({ 
             type: "text", 
-            text: `請幫我執行逆向驗屍診斷 (/autopsy)。這是一份死因不明的 Legacy Code：\n\n\`\`\`javascript\n${caseContent}\n\`\`\`` 
+            text: isEnglish 
+                ? `Please perform a reverse autopsy diagnosis (/autopsy). Here is a piece of Legacy Code with an unknown cause of death:\n\n\`\`\`javascript\n${caseContent}\n\`\`\``
+                : `請幫我執行逆向驗屍診斷 (/autopsy)。這是一份死因不明的 Legacy Code：\n\n\`\`\`javascript\n${caseContent}\n\`\`\`` 
         });
     }
 
@@ -132,12 +141,16 @@ async function main() {
     }
 
     try {
+        const systemPromptStr = isEnglish
+            ? `You are the Legacy-Code-Exorcist. Core Directives:\n${coreContext}\n\nYour Persona Configuration:\n${skinContent}\n\nYour task is to diagnose the provided legacy code (and possible screenshots) based STRICTLY on your persona. You MUST reply in English. Exhibit strong personal character traits! Do not provide boring, lengthy explanations. If doing visual debugging, use your forensic OCR vision.`
+            : `你是 Legacy-Code-Exorcist。核心指導原則：\n${coreContext}\n\n你的專屬人格設定：\n${skinContent}\n\n你的任務是根據「人格設定」，對使用者提供的過時/糟糕原始碼（與可能的錯誤截圖）進行診斷。請表現出該人格強烈的個人色彩！不要提供冗長而平淡的解釋。如果是通靈除錯，請發揮視覺取證的能力。`;
+
         const response = await openai.chat.completions.create({
             model: modelName,
             messages: [
                 {
                     role: 'system',
-                    content: `你是 Legacy-Code-Exorcist。核心指導原則：\n${coreContext}\n\n你的專屬人格設定：\n${skinContent}\n\n你的任務是根據「人格設定」，對使用者提供的過時/糟糕原始碼（與可能的錯誤截圖）進行診斷。請表現出該人格強烈的個人色彩！不要提供冗長而平淡的解釋。如果是通靈除錯，請發揮視覺取證的能力。`
+                    content: systemPromptStr
                 },
                 {
                     role: 'user',

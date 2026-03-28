@@ -1,5 +1,7 @@
 ![Legacy Code Exorcist Cover](cover.png)
 
+[English](README.en.md) | [繁體中文](README.md)
+
 # Legacy Code Exorcist (代碼法醫系統)
 
 「進來這裡的代碼，只有兩種結局：被我醫好，或是被我剖開。」
