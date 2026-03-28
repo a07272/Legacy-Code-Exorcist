@@ -1,7 +1,3 @@
-<div align="center">
-  <img src="icon.png" width="100" height="auto" alt="Icon">
-</div>
-
 ![Legacy Code Exorcist Cover](cover.png)
 
 # Legacy Code Exorcist (代碼法醫系統)
